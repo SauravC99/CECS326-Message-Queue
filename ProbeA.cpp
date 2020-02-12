@@ -20,3 +20,10 @@ void sendToHub(int num) {
 bool waitForResponse() {
 
 }
+
+int main() {
+    for (int i = 0; i < 100; i++) {
+        cout << generateValue() << endl;
+    }
+    return 0;
+}
