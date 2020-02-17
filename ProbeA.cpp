@@ -21,13 +21,20 @@ int value;
 
 /*
 *    generates the value divisible by alpha and returns it
+*    also if returns 0 then terminate the program
 **/
 int generateValue() {
     int num;
     bool generated = false;
     while (!generated) {
         num = rand();
-        if (num % alpha == 0)
+         
+        //will terminate the program if 
+        //the random num is less than 50
+	if(terminate(num))
+	    generate = true
+	    num = 0;
+        else if (num % alpha == 0)
             generated = true;
     }
     return num;

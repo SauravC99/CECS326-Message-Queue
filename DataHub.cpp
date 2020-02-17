@@ -15,9 +15,13 @@ int alpha = 997;
 int beta = 257;
 int rho = 251;
 
-int getReading() {
+//will be the id of the queue
+int qid;
 
-}
+struct buf {
+    long mtype; // required
+    char greeting[50]; // mesg content
+};
 
 //Purpose of the hub is to recieve data from the probes,
 //then to output which probe sent the message and the data
@@ -28,7 +32,7 @@ int getReading() {
  
 //if alpha is probe A, if beta Probe B, if rho Probe C
 
-bool isValid(int num, int probe) {
+int isValid(int num, int probe) {
     if (probe == 1) {
         if (num % alpha == 0)
             return true;
@@ -44,4 +48,46 @@ bool isValid(int num, int probe) {
             return true;
         return false;
     }
+}
+
+void createMessageQueue(){
+    // create my msgQ with key value from ftok()
+    return msgget(ftok(".",'u'), IPC_EXCL|IPC_CREAT|0600);
+}
+
+int getReading() {
+
+    buf msg;
+    int size = sizeof(msg)-sizeof(long);
+
+    msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0); // read mesg
+						// don't read "fake" mesg
+    cout << getpid() << ": gets message" << endl;
+    cout << "message: " << msg.greeting << endl;
+	
+    strcat(msg.greeting, " and Adios.");
+    cout << getpid() << ": sends reply" << endl;
+    msg.mtype = 314; // only reading mesg with type mtype = 314
+    msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+    cout << getpid() << ": now exits" << endl;
+
+    msgrcv (qid, (struct msgbuf *)&msg, size, -112, 0);
+    cout << getpid() << ": gets message" << endl;
+    cout << "message: " << msg.greeting << endl;
+    
+    msgrcv (qid, (struct msgbuf *)&msg, size, 0, 0);
+    cout << getpid() << ": gets message" << endl;
+    cout << "message: " << msg.greeting << endl;
+    
+    msgrcv (qid, (struct msgbuf *)&msg, size, 117, 0);
+    cout << getpid() << ": gets message" << endl;
+    cout << "message: " << msg.greeting << endl;
+
+    // now safe to delete message queue
+    msgctl (qid, IPC_RMID, NULL);
+}
+
+int main() {
+    qid = createMessageQueue();
+    
 }
