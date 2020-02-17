@@ -23,6 +23,7 @@ void sendToHub(int num) {
 
 //change so that it will terminate after 10000 messages using force patch file
 bool terminate(int num) {
+    //if (messages >= 10000)
     if (num < 50)
         return true;
     return false;

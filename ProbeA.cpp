@@ -27,18 +27,19 @@ int generateValue() {
     bool generated = false;
     while (!generated) {
         num = rand();
-        if (num % alpha = 0)
+        if (num % alpha == 0)
             generated = true;
     }
     return num;
 }
 
 void sendToHub(int num) {
-
+    //send data to other program
 }
 
 bool waitForResponse() {
-
+    //get response from other program
+    //returns true if need to wait
 }
 
 bool terminate(int num) {
@@ -48,10 +49,13 @@ bool terminate(int num) {
 }
 
 int main() {
-    while (!terminate(100)) {
+    value = generateValue();
+    while (!terminate(value)) {
         //produce reading
         value = generateValue();
         sendToHub(value);
-        
+        while (waitForResponse()) {
+            //wait for response
+        }
     }
 }
