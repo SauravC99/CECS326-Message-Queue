@@ -85,9 +85,11 @@ int getReading() {
 
     // now safe to delete message queue
     msgctl (qid, IPC_RMID, NULL);
+    return 0;
 }
 
 int main() {
     qid = createMessageQueue();
+    getReading();
     
 }
