@@ -13,13 +13,10 @@
 using namespace std;
 
 int alpha = 997;
-//int beta = 257; not needed only probe B
-//int rho = 251; not needed only probe C
-
 int value;
 struct buf {
-    long mtype; // required
-    char greeting[50]; // mesg content
+    long mtype; 
+    char greeting[50]; 
 };
 
 
@@ -44,11 +41,18 @@ int generateValue() {
     return num;
 }
 
-void sendToHub(int num) {
-        //send data to other program
-        buf msg;
-	int size = sizeof(msg)-sizeof(long);
-
+void sendToHub() {
+    int qid = msgget(ftok(".",'u'), 0);
+    buf msg;
+    int size = sizeof(msg)-sizeof(long);
+    bool terminateProg = false;
+    while(!terminateProg){
+        generatedVal = generateValue();
+        if (generatedVal == 0){
+            terminateProg = true;
+        }
+        else{
+        
 	// sending garbage
 	msg.mtype = 111;
 	strcpy(msg.greeting, "Fake message");
@@ -64,20 +68,17 @@ void sendToHub(int num) {
 	msg.mtype = 117; 	// set message type mtype = 117
 	msgsnd(qid, (struct msgbuf *)&msg, size, 0); // sending
 
-	msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0); // reading
+	msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0); 
+        // reading
 	cout << getpid() << ": gets reply" << endl;
 	cout << "reply: " << msg.greeting << endl;
 	cout << getpid() << ": now exits" << endl;
 
 	msg.mtype = 117;
 	msgsnd (qid, (struct msgbuf *)&msg, size, 0);
-
-	exit(0);
-}
-
-bool waitForResponse() {
-    //get response from other program
-    //returns true if need to wait
+        }
+    }
+    exit(0);
 }
 
 bool terminate(int num) {
@@ -87,16 +88,6 @@ bool terminate(int num) {
 }
 
 int main() {
-    sleep(3)
-    sendToHub()
-
-    /*value = generateValue();
-    while (!terminate(value)) {
-        //produce reading
-        value = generateValue();
-        sendToHub(value);
-        while (waitForResponse()) {
-            //wait for response
-        }
-    }**/
+    sleep(3);
+    sendToHub();
 }

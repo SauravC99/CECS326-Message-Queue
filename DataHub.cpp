@@ -50,9 +50,10 @@ int isValid(int num, int probe) {
     }
 }
 
-void createMessageQueue(){
+int createMessageQueue(){
     // create my msgQ with key value from ftok()
-    return msgget(ftok(".",'u'), IPC_EXCL|IPC_CREAT|0600);
+    int qid = msgget(ftok(".",'u'), IPC_EXCL|IPC_CREAT|0600);
+    return qid;
 }
 
 int getReading() {
