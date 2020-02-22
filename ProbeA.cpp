@@ -9,16 +9,19 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstdlib>
+#include <string>
 
 using namespace std;
 
 int alpha = 997;
+
 int value;
 struct buf {
-    long mtype; 
-    char greeting[50]; 
+    long mtype; // required
+    char greeting[50]; // mesg content
 };
 
+const char* convert(int num);
 
 /*
 *    generates the value divisible by alpha and returns it
@@ -32,27 +35,24 @@ int generateValue() {
          
         //will terminate the program if 
         //the random num is less than 50
-	if(terminate(num))
-	    generate = true
-	    num = 0;
+	    if(false) {//terminate(num)) {
+	        generated = true;
+	        num = 0;
+        }
         else if (num % alpha == 0)
             generated = true;
     }
     return num;
 }
 
-void sendToHub() {
-    int qid = msgget(ftok(".",'u'), 0);
+void sendToHub(int num) {
+    //string message = to_string(num);
+    //send data to other program
     buf msg;
-    int size = sizeof(msg)-sizeof(long);
-    bool terminateProg = false;
-    while(!terminateProg){
-        generatedVal = generateValue();
-        if (generatedVal == 0){
-            terminateProg = true;
-        }
-        else{
-        
+	int size = sizeof(msg)-sizeof(long);
+
+    int qid = msgget(ftok(".", 'u'), 0);
+
 	// sending garbage
 	msg.mtype = 111;
 	strcpy(msg.greeting, "Fake message");
@@ -63,22 +63,27 @@ void sendToHub() {
 	msgsnd(qid, (struct msgbuf *)&msg, size, 0);
 
 	// prepare my message to send
-	strcpy(msg.greeting, "Hello there");	
+	//strcpy(msg.greeting, "Hello there");
+    char charArr[] = "" + num;
+    strcpy(msg.greeting, "" + num);
 	cout << getpid() << ": sends greeting" << endl;
 	msg.mtype = 117; 	// set message type mtype = 117
 	msgsnd(qid, (struct msgbuf *)&msg, size, 0); // sending
 
-	msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0); 
-        // reading
+	msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0); // reading
 	cout << getpid() << ": gets reply" << endl;
 	cout << "reply: " << msg.greeting << endl;
 	cout << getpid() << ": now exits" << endl;
 
 	msg.mtype = 117;
 	msgsnd (qid, (struct msgbuf *)&msg, size, 0);
-        }
-    }
-    exit(0);
+
+	exit(0);
+}
+
+bool waitForResponse() {
+    //get response from other program
+    //returns true if need to wait
 }
 
 bool terminate(int num) {
@@ -87,7 +92,25 @@ bool terminate(int num) {
     return false;
 }
 
+const char* convert(int num) {
+    char b = num;
+    const char* a;
+    a = &b;
+    return a;
+}
+
 int main() {
-    sleep(3);
-    sendToHub();
+    cout << "Start" << endl;
+    sendToHub(generateValue());
+    cout << "done" << endl;
+
+    /*value = generateValue();
+    while (!terminate(value)) {
+        //produce reading
+        value = generateValue();
+        sendToHub(value);
+        while (waitForResponse()) {
+            //wait for response
+        }
+    }**/
 }
