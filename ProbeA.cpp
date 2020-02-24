@@ -64,8 +64,10 @@ void sendToHub(int num) {
 
 	// prepare my message to send
 	//strcpy(msg.greeting, "Hello there");
-    char charArr[] = "" + num;
-    strcpy(msg.greeting, "" + num);
+    string messageToSnd = to_string(num);
+    strcpy(msg.greeting, messageToSnd.c_str());
+
+    
 	cout << getpid() << ": sends greeting" << endl;
 	msg.mtype = 117; 	// set message type mtype = 117
 	msgsnd(qid, (struct msgbuf *)&msg, size, 0); // sending
@@ -101,16 +103,7 @@ const char* convert(int num) {
 
 int main() {
     cout << "Start" << endl;
+    sleep(3);
     sendToHub(generateValue());
     cout << "done" << endl;
-
-    /*value = generateValue();
-    while (!terminate(value)) {
-        //produce reading
-        value = generateValue();
-        sendToHub(value);
-        while (waitForResponse()) {
-            //wait for response
-        }
-    }**/
 }
