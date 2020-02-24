@@ -71,16 +71,11 @@ int getReading() {
     msg.mtype = 314; // only reading mesg with type mtype = 314
     msgsnd(qid, (struct msgbuf *)&msg, size, 0);
     cout << getpid() << ": now exits" << endl;
-
-    msgrcv (qid, (struct msgbuf *)&msg, size, -112, 0);
-    cout << getpid() << ": gets message" << endl;
-    cout << "message: " << msg.greeting << endl;
-    
-    msgrcv (qid, (struct msgbuf *)&msg, size, 0, 0);
-    cout << getpid() << ": gets message" << endl;
-    cout << "message: " << msg.greeting << endl;
-    
     msgrcv (qid, (struct msgbuf *)&msg, size, 117, 0);
+    cout << getpid() << ": gets message" << endl;
+    cout << "message: " << msg.greeting << endl;
+
+     msgrcv (qid, (struct msgbuf *)&msg, size, 117, 0);
     cout << getpid() << ": gets message" << endl;
     cout << "message: " << msg.greeting << endl;
 

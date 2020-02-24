@@ -54,12 +54,11 @@ void sendToHub(int num) {
     int qid = msgget(ftok(".", 'u'), 0);
 
 	// prepare my message to send
-	//strcpy(msg.greeting, "Hello there");
     string messageToSnd = to_string(num);
     strcpy(msg.greeting, messageToSnd.c_str()); //converts string to array of char
 
     
-	cout << getpid() << ": sends greeting" << endl;
+	cout << getpid() << ": sends greeting" << msg.greeting << endl;
 	msg.mtype = 117; 	// set message type mtype = 117
 	msgsnd(qid, (struct msgbuf *)&msg, size, 0); // sending
 
@@ -68,15 +67,18 @@ void sendToHub(int num) {
 	cout << "reply: " << msg.greeting << endl;
 	cout << getpid() << ": now exits" << endl;
 
+    string messageToSndTwo = to_string(generateValue());
+    strcpy(msg.greeting, messageToSndTwo.c_str());
 	msg.mtype = 117;
+    cout << getpid() << ": sends greeting" << msg.greeting << endl;
+	msgsnd (qid, (struct msgbuf *)&msg, size, 0);
+
+    strcpy(msg.greeting, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+	msg.mtype = 117;
+    cout << getpid() << ": sends greeting" << msg.greeting << endl;
 	msgsnd (qid, (struct msgbuf *)&msg, size, 0);
 
 	exit(0);
-}
-
-bool waitForResponse() {
-    //get response from other program
-    //returns true if need to wait
 }
 
 bool terminate(int num) {
