@@ -74,10 +74,6 @@ void sendToHub(int num) {
 	exit(0);
 }
 
-bool waitForResponse() {
-    //get response from other program
-    //returns true if need to wait
-}
 
 bool terminate(int num) {
     if (num < 50)
