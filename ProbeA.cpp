@@ -53,19 +53,10 @@ void sendToHub(int num) {
 
     int qid = msgget(ftok(".", 'u'), 0);
 
-	// sending garbage
-	msg.mtype = 111;
-	strcpy(msg.greeting, "Fake message");
-	msgsnd(qid, (struct msgbuf *)&msg, size, 0);
-
-	strcpy(msg.greeting, "Another fake");
-	msg.mtype = 113;
-	msgsnd(qid, (struct msgbuf *)&msg, size, 0);
-
 	// prepare my message to send
 	//strcpy(msg.greeting, "Hello there");
     string messageToSnd = to_string(num);
-    strcpy(msg.greeting, messageToSnd.c_str());
+    strcpy(msg.greeting, messageToSnd.c_str()); //converts string to array of char
 
     
 	cout << getpid() << ": sends greeting" << endl;
@@ -103,7 +94,9 @@ const char* convert(int num) {
 
 int main() {
     cout << "Start" << endl;
-    sleep(3);
-    sendToHub(generateValue());
+    cout << "sleep" << endl;
+    int a = generateValue();
+    cout << a << endl;
+    sendToHub(a);
     cout << "done" << endl;
 }
