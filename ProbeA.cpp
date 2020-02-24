@@ -85,13 +85,6 @@ bool terminate(int num) {
     return false;
 }
 
-const char* convert(int num) {
-    char b = num;
-    const char* a;
-    a = &b;
-    return a;
-}
-
 int main() {
     cout << "Start" << endl;
     cout << "sleep" << endl;
