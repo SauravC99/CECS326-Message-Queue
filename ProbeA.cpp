@@ -78,8 +78,11 @@ void sendToHub(int num) {
     cout << getpid() << ": sends greeting" << msg.greeting << endl;
 	msgsnd (qid, (struct msgbuf *)&msg, size, 0);
 
+<<<<<<< HEAD
 	exit(0);
 }
+=======
+>>>>>>> 2c52a43c565b8c20da758f6fc5a2f78de78f561d
 
 bool terminate(int num) {
     if (num < 50)

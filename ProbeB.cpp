@@ -18,6 +18,7 @@ int beta = 257;
 int rho = 251;
 
 int value;
+int count;
 
 struct buf {
     long mtype; // required
@@ -44,18 +45,19 @@ void sendToHub(int num) {
 	cout << getpid() << ": sends greeting" << endl;
 	msg.mtype = 117; 	// set message type mtype = 117
 	msgsnd(qid, (struct msgbuf *)&msg, size, 0); // sending
+
+    count++;
 }
 
 //change so that it will terminate after 10000 messages using force patch file
-bool terminate(int num) {
-    //if (messages >= 10000)
-    if (num < 50)
+bool end() {
+    if (count <= 10000)
         return true;
     return false;
 }
 
 int main() {
-    while (!terminate(100)) {
+    while (!end()) {
         //produce reading
         value = generateValue();
         sendToHub(value);
