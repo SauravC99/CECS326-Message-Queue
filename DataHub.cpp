@@ -115,6 +115,7 @@ void getReading() {
 
     //first checks if its from probe A
     if(Probe == 0){
+        cout << "Is probe A" << endl;
 
         //checks if it quit
         if(checkIfProbeAQuit()){
@@ -131,13 +132,13 @@ void getReading() {
 
     // checks if its from probe B
     else if (Probe == 1){
-
+        cout << "Is probe B" << endl;
     }
 
     //checks if its from probe C
 
     else if(Probe == 2){
-
+        cout << "Is probe C" << endl;
     }
 
 }
@@ -151,12 +152,13 @@ void respondTOProbeA(){
     //creates a response to the Probe with the return message 
     strcat(msg.greeting, " and acknowledged.");
     cout << getpid() << ": sends reply" << endl;
+    cout << "message sent: " << msg.greeting << endl;
     
     //setting the mtype to 115
     msg.mtype = 115;
 
-    //sends the message then reverts to the port 1
-    msgsnd(qid, (struct msgbuf *)&msg, len, 0);
+    //sends the message then reverts to the port 115
+    msgsnd(qid, (struct msgbuf *)&msg, 115, 0);
     msg.mtype = 1;
 }
 
