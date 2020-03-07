@@ -13,9 +13,12 @@
 
 using namespace std;
 
-//int alpha = 997;
+int generateValue();
+void sendToHub(int num);
+
 int beta = 257;
-//int rho = 251;
+
+int qid = msgget(ftok(".", 'u'), 0);
 
 int value;
 int count;
@@ -24,6 +27,8 @@ struct buf {
     long mtype; // required
     char greeting[50]; // mesg content
 };
+buf msg;
+int size = sizeof(msg)-sizeof(long);
 
 //need to change so that it returns a num divisible by its magic seed (beta)
 int generateValue() {
@@ -39,18 +44,20 @@ int generateValue() {
 }
 
 void sendToHub(int num) {
-    buf msg;
+    //buf msg;
 	int size = sizeof(msg)-sizeof(long);
 
-    int qid = msgget(ftok(".", 'u'), 0);
+    //int qid = msgget(ftok(".", 'u'), 0);
 
     string messageToSnd = to_string(num);
     strcpy(msg.greeting, messageToSnd.c_str()); //converts string to array of char
 
+    msg.mtype = 2;
     
-	cout << getpid() << ": sends greeting" << endl;
-	msg.mtype = 117; 	// set message type mtype = 117
+	
+	//msg.mtype = 117; 	// set message type mtype = 117
 	msgsnd(qid, (struct msgbuf *)&msg, size, 0); // sending
+    cout << getpid() << ": sends greeting" << endl;
 
     count++;
 }
