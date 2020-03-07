@@ -51,6 +51,9 @@ buf msg;
 //initializing the size of the message buffer
 int size = sizeof(msg)-sizeof(long);
 
+//saves the message sent earlier to compare to later
+string savedmsg;
+
 
 /*
 *    generates the value divisible by alpha and returns it
@@ -91,7 +94,10 @@ void sendToHub(int num) {
     //meaning if a number is divisible by both alpha and beta, the datahub wont know
     //where the message truly came from, therfore we must add which probe the message
     //derived from
-    strcpy(msg.greeting, 'A: ' + messageToSnd.c_str());
+    strcpy(msg.greeting, "A: " + messageToSnd.c_str());
+
+    //saves the message for later use
+    strcpy(savedmsg, "A: " + messageToSnd.c_str());
     
     //prepares the mtype (the port to send to)
 	msg.mtype = 1;
@@ -100,10 +106,24 @@ void sendToHub(int num) {
 	msgsnd(qid, (struct msgbuf *)&msg, size, 0);
     cout << getpid() << ": sends greeting: " << msg.greeting << endl;
 
-    //waits for the acknoledgement message from the datahub
-	msgrcv(qid, (struct msgbuf *)&msg, size, 115, 0);
-	cout << getpid() << ": gets reply" << endl;
-	cout << "reply: " << msg.greeting << endl;
+    //waits for the acknoledgement message from the datahub, in a while loop checks to see
+    // if it matches with the message recently sent so that 
+    bool hasRecievedAcknolwdgement = false;
+    while(!hasRecievedAcknolwdgement){
+	    
+        //repeatedly checks to see if the message matches with the one sent so that
+        //it wont get a false positive when reading back the acknoledgement 
+        msgrcv(qid, (struct msgbuf *)&msg, size, 115, 0);
+        
+        //replicates the message recieved to see if the message sent earlier was truly the one recieved
+        msgcpy(savedmsg, " and acknowledged.");
+        if(savedmsg == msg.greeting){
+            cout << getpid() << ": got acknoledgement" << endl;
+	        cout << "reply: " << msg.greeting << endl;
+            hasRecievedAcknolwdgement = true;
+        }
+	    
+    }
 }
 
 
@@ -116,7 +136,7 @@ bool terminate(int num) {
         msg.mtype = 1;
 
         //prepares the message to send to the datahub and then exists through the exit code
-        strcpy(msg.greeting, 'A_Leaves');
+        strcpy(msg.greeting, "A_Leaves");
 	    msgsnd (qid, (struct msgbuf *)&msg, size, 0);
         cout << getpid() << ": sends greeting" << msg.greeting << endl;
 

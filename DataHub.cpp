@@ -23,7 +23,7 @@ using namespace std;
 
 
 //initializing all of the functions of the datahub
-int findProbe(String message);
+int findProbe();
 void getReading();
 void respondTOProbeA();
 bool checkIfProbeAQuit();
@@ -45,9 +45,8 @@ struct buf {
     char greeting[50]; // mesg content
 };
 
-//initializing buffer for use and its size
+//initializing buffer for use
 buf msg;
-int size = sizeof(msg)-sizeof(long);
 
 //listing of which probes are active, once all probes have exited, the datahub will 
 //exit and delete the message queue
@@ -64,8 +63,8 @@ bool ProbeCActive = false;
 * 2 = came from Probe C
 * -1 = error arose somehow or its an exit message
 **/
-int findProbe(String message) {
-    char firstElement = message.charAt(0);
+int findProbe() {
+    char firstElement = msg.greeting[0];
 
     if (firstElement == 'A'){
         return 0;
@@ -80,6 +79,9 @@ int findProbe(String message) {
     return -1;
     
 }
+
+//initiating the size for later use
+int size;
 
 
 /*
@@ -97,6 +99,9 @@ int findProbe(String message) {
 **/
 void getReading() {
 
+    //initiating the size of the buffer
+    size = sizeof(msg)-sizeof(long);
+
     //sets the mtype to 1
     msg.mtype = 1;
 
@@ -106,7 +111,7 @@ void getReading() {
     cout << "message: " << msg.greeting << endl;
 	
     // detects which probe the greeting came from according to the message
-    int Probe = findProbe(msg.greeting);
+    int Probe = findProbe();
 
     //first checks if its from probe A
     if(Probe == 0){
@@ -160,7 +165,12 @@ void respondTOProbeA(){
 * checks if probe A has sent its quit message
 **/
 bool checkIfProbeAQuit(){
-    if(msg.greeting == 'A_Leaves'){
+
+    //creates a temporary message buffer to use and compare to the data
+    buf tempBuffer;
+    strcpy(tempBuffer.greeting, "A_Leaves");
+
+    if(msg.greeting == tempBuffer.greeting){
         return true;
     }
     return false;
