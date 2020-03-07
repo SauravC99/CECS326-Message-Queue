@@ -43,16 +43,16 @@ bool term = false;
 struct buf {
     long mtype;
     char greeting[50]; 
-}
+};
 
 //initializing the buffer
 buf msg;
 
 //initializing the size of the message buffer
-int size = sizeof(msg)-sizeof(long);
+int size;
 
 //saves the message sent earlier to compare to later
-string savedmsg;
+buf savedmsg;
 
 
 /*
@@ -63,7 +63,7 @@ int generateValue() {
     int num;
     bool generated = false;
     while (!generated) {
-        num = rand(RAND_MAX);
+        num = rand();
          
         //will terminate the program if 
         //the random num is less than 50
@@ -84,6 +84,8 @@ int generateValue() {
 **/
 void sendToHub(int num) {
 
+    size = sizeof(msg)-sizeof(long);
+
 	// prepare my message to send
     string messageToSnd = to_string(num);
 
@@ -94,10 +96,12 @@ void sendToHub(int num) {
     //meaning if a number is divisible by both alpha and beta, the datahub wont know
     //where the message truly came from, therfore we must add which probe the message
     //derived from
-    strcpy(msg.greeting, "A: " + messageToSnd.c_str());
+    strcpy(msg.greeting, "A: ");
+    strcat(msg.greeting,  messageToSnd.c_str());
 
     //saves the message for later use
-    strcpy(savedmsg, "A: " + messageToSnd.c_str());
+    strcpy(savedmsg.greeting, "A: ");
+    strcat(savedmsg.greeting,  messageToSnd.c_str());
     
     //prepares the mtype (the port to send to)
 	msg.mtype = 1;
@@ -116,8 +120,8 @@ void sendToHub(int num) {
         msgrcv(qid, (struct msgbuf *)&msg, size, 115, 0);
         
         //replicates the message recieved to see if the message sent earlier was truly the one recieved
-        msgcpy(savedmsg, " and acknowledged.");
-        if(savedmsg == msg.greeting){
+        strcpy(savedmsg.greeting, " and acknowledged.");
+        if(savedmsg.greeting == msg.greeting){
             cout << getpid() << ": got acknoledgement" << endl;
 	        cout << "reply: " << msg.greeting << endl;
             hasRecievedAcknolwdgement = true;
@@ -131,9 +135,10 @@ void sendToHub(int num) {
 * returns true if the number is less than 50 so that the proces can terminate
 **/
 bool terminate(int num) {
-    if (num < 50)
+    if (num < 50){
         //sends the exit message through port 1
         msg.mtype = 1;
+        cout << "will leave, number was" << num << endl;
 
         //prepares the message to send to the datahub and then exists through the exit code
         strcpy(msg.greeting, "A_Leaves");
@@ -143,6 +148,7 @@ bool terminate(int num) {
         //exits the message queue
         exit(0);
         return true;
+    }
     return false;
 }
 
