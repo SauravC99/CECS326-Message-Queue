@@ -13,9 +13,9 @@
 
 using namespace std;
 
-int alpha = 997;
+//int alpha = 997;
 int beta = 257;
-int rho = 251;
+//int rho = 251;
 
 int value;
 int count;
@@ -28,7 +28,13 @@ struct buf {
 //need to change so that it returns a num divisible by its magic seed (beta)
 int generateValue() {
     int num;
-    num = rand();
+    bool generate;
+    generate = false;
+    while (!generate) {
+        num = rand();
+        if (num % beta == 0)
+            generate = true;
+    }
     return num;
 }
 
@@ -57,10 +63,10 @@ bool end() {
 }
 
 int main() {
+    count = 1;
     while (!end()) {
         //produce reading
-        value = generateValue();
-        sendToHub(value);
+        sendToHub(generateValue());
         
     }
 }
