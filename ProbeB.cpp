@@ -21,7 +21,7 @@ int beta = 257;
 int qid = msgget(ftok(".", 'u'), 0);
 
 int value;
-int count;
+int count = 0;
 
 struct buf {
     long mtype; // required
@@ -48,12 +48,12 @@ void sendToHub(int num) {
     string messageToSnd = to_string(num);
     strcpy(msg.greeting, messageToSnd.c_str()); //converts string to array of char
     
-    msg.mtype = 2;
+    msg.mtype = 1;
     
-	//msg.mtype = 117; 	// set message type mtype = 117
 	msgsnd(qid, (struct msgbuf *)&msg, len, 0); // sending
     cout << getpid() << ": sends greeting" << endl;
 
+    count++;
 }
 
 //change so that it will terminate after 10000 messages using force patch file
@@ -64,7 +64,7 @@ bool end() {
 }
 
 int main() {
-    while (true) {
+    while (end()) {
         //produce reading
         int value;
         value = generateValue();
