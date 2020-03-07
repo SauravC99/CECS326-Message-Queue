@@ -49,15 +49,11 @@ struct buf {
 buf msg;
 
 //initializing the size of the message buffer
-int size;
-
-//saves the message sent earlier to compare to later
-buf savedmsg;
+int len;
 
 
 /*
 *    generates the value divisible by alpha and returns it
-*    also if returns 0 
 **/
 int generateValue() {
     int num;
@@ -84,7 +80,7 @@ int generateValue() {
 **/
 void sendToHub(int num) {
 
-    size = sizeof(msg)-sizeof(long);
+    len = sizeof(msg)-sizeof(long);
 
 	// prepare my message to send
     string messageToSnd = to_string(num);
@@ -98,36 +94,20 @@ void sendToHub(int num) {
     //derived from
     strcpy(msg.greeting, "A: ");
     strcat(msg.greeting,  messageToSnd.c_str());
-
-    //saves the message for later use
-    strcpy(savedmsg.greeting, "A: ");
-    strcat(savedmsg.greeting,  messageToSnd.c_str());
     
     //prepares the mtype (the port to send to)
 	msg.mtype = 1;
 
     //sends the message and prints the message sent to the datahub
-	msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+	msgsnd(qid, (struct msgbuf *)&msg, len, 0);
     cout << getpid() << ": sends greeting: " << msg.greeting << endl;
 
-    //waits for the acknoledgement message from the datahub, in a while loop checks to see
-    // if it matches with the message recently sent so that 
-    bool hasRecievedAcknolwdgement = false;
-    while(!hasRecievedAcknolwdgement){
-	    
-        //repeatedly checks to see if the message matches with the one sent so that
-        //it wont get a false positive when reading back the acknoledgement 
-        msgrcv(qid, (struct msgbuf *)&msg, size, 115, 0);
-        
-        //replicates the message recieved to see if the message sent earlier was truly the one recieved
-        strcpy(savedmsg.greeting, " and acknowledged.");
-        if(savedmsg.greeting == msg.greeting){
-            cout << getpid() << ": got acknoledgement" << endl;
-	        cout << "reply: " << msg.greeting << endl;
-            hasRecievedAcknolwdgement = true;
-        }
-	    
-    }
+    //prepares to recieve the message
+    msg.mtype = 115;    
+    msgrcv(qid, (struct msgbuf *)&msg, len, 115, 0);
+    cout << getpid() << ": got acknoledgement" << endl;
+	cout << "reply: " << msg.greeting << endl;
+    msg.mtype = 1;
 }
 
 
@@ -142,8 +122,8 @@ bool terminate(int num) {
 
         //prepares the message to send to the datahub and then exists through the exit code
         strcpy(msg.greeting, "A_Leaves");
-	    msgsnd (qid, (struct msgbuf *)&msg, size, 0);
-        cout << getpid() << ": sends greeting" << msg.greeting << endl;
+	    msgsnd (qid, (struct msgbuf *)&msg, len, 0);
+        cout << getpid() << ": sends exit statement: " << msg.greeting << endl;
 
         //exits the message queue
         exit(0);
@@ -153,6 +133,17 @@ bool terminate(int num) {
 }
 
 int main() {
-    
-    sendToHub(generateValue());
+    bool hasntTerminated = true;
+
+    //will keep going until generates a num less than 50
+    while(hasntTerminated){
+        int num = generateValue();
+
+        if(num < 50){
+            hasntTerminated = false;
+        }
+        else{
+            sendToHub(num);
+        }
+    }
 }

@@ -158,7 +158,7 @@ void respondTOProbeA(){
     msg.mtype = 115;
 
     //sends the message then reverts to the port 115
-    msgsnd(qid, (struct msgbuf *)&msg, 115, 0);
+    msgsnd(qid, (struct msgbuf *)&msg, len, 0);
     msg.mtype = 1;
 }
 
@@ -172,7 +172,8 @@ bool checkIfProbeAQuit(){
     buf tempBuffer;
     strcpy(tempBuffer.greeting, "A_Leaves");
 
-    if(msg.greeting == tempBuffer.greeting){
+    if(strcmp(msg.greeting,tempBuffer.greeting) == 0){
+        cout << "ProbeA quit" << endl;
         return true;
     }
     return false;
@@ -215,6 +216,7 @@ int main() {
     while(ProbeAActive || ProbeBActive || ProbeCActive){
         getReading();
     }
+    cout << "Exited queue and deleted it" << endl;
     deleteQueue();
     
 }
