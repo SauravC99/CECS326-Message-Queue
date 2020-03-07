@@ -81,7 +81,7 @@ int findProbe() {
 }
 
 //initiating the size for later use
-int size;
+int len;
 
 
 /*
@@ -100,13 +100,13 @@ int size;
 void getReading() {
 
     //initiating the size of the buffer
-    size = sizeof(msg)-sizeof(long);
+    len = sizeof(msg)-sizeof(long);
 
     //sets the mtype to 1
     msg.mtype = 1;
 
     //reads the message and displays it
-    msgrcv(qid, (struct msgbuf *)&msg, size, 1, 0);
+    msgrcv(qid, (struct msgbuf *)&msg, len, 1, 0);
     cout << getpid() << ": gets message" << endl;
     cout << "message: " << msg.greeting << endl;
 	
@@ -156,7 +156,7 @@ void respondTOProbeA(){
     msg.mtype = 115;
 
     //sends the message then reverts to the port 1
-    msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+    msgsnd(qid, (struct msgbuf *)&msg, len, 0);
     msg.mtype = 1;
 }
 
