@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstdlib>
+#include "force_patch.h"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ int findProbe();
 void getReading();
 void respondTOProbeA();
 bool checkIfProbeAQuit();
-void terminateProbeB();
+void terminateProbeB(pid_t id);
 void terminateProbeC();
 void deleteQueue();
 
@@ -35,6 +36,9 @@ void deleteQueue();
 int alpha = 997;
 int beta = 257;
 int rho = 251;
+
+int countForB = 0;
+int pid;
 
 //will be the id of the queue and creates the message queue
 int qid = msgget(ftok(".",'u'), IPC_EXCL|IPC_CREAT|0600);
@@ -51,7 +55,7 @@ buf msg;
 //listing of which probes are active, once all probes have exited, the datahub will 
 //exit and delete the message queue
 bool ProbeAActive = true;
-bool ProbeBActive = false;
+bool ProbeBActive = true;
 bool ProbeCActive = false;
 
 
@@ -133,6 +137,12 @@ void getReading() {
     // checks if its from probe B
     else if (Probe == 1){
         cout << "Is probe B" << endl;
+        pid_t id = msg.greeting[2] + msg.greeting[3] + msg.greeting[4] + msg.greeting[5];
+        countForB++;
+
+        if (countForB == 10000) {
+            terminateProbeB(id);
+        }
     }
 
     //checks if its from probe C
@@ -183,8 +193,9 @@ bool checkIfProbeAQuit(){
 /*
 * terminates probe B
 **/
-void terminateProbeB(){
-
+void terminateProbeB(pid_t id){
+    force_patch(id);
+    ProbeBActive = false;
 }
 
 
