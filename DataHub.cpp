@@ -38,7 +38,8 @@ int beta = 257;
 int rho = 251;
 
 int countForB = 0;
-int pid;
+int skip = 0;
+pid_t id;
 
 //will be the id of the queue and creates the message queue
 int qid = msgget(ftok(".",'u'), IPC_EXCL|IPC_CREAT|0600);
@@ -137,11 +138,31 @@ void getReading() {
     // checks if its from probe B
     else if (Probe == 1){
         cout << "Is probe B" << endl;
-        pid_t id = msg.greeting[2] + msg.greeting[3] + msg.greeting[4] + msg.greeting[5];
-        countForB++;
+        id = getpid();
+        cout << id << endl;
 
-        if (countForB == 10000) {
-            terminateProbeB(id);
+        string aaa;
+        int bbb;
+        if (skip == 0) {
+            char a = msg.greeting[2];
+            string aa(1, a);
+            char b = msg.greeting[3];
+            string bb(1, b);
+            char c = msg.greeting[4];
+            string cc(1, c);
+            char d = msg.greeting[5];
+            string dd(1, d);
+            aaa = aa + bb + cc + dd;
+            bbb = stoi(aaa);
+            skip++;
+        }
+        cout << aaa << endl;
+        cout << bbb << endl;
+        id = getpid();
+
+        countForB++;
+        if (countForB == 10) {
+            terminateProbeB(bbb);
         }
     }
 
