@@ -83,7 +83,7 @@ void sendToHub(int num) {
     len = sizeof(msg)-sizeof(long);
 
 	// prepare my message to send
-    string messageToSnd = to_string(num);
+    string messageToSnd = to_string(getpid());
 
     //The message sent needs the A in front of it because mathmatically if
     //a random value is generated, there is a possibility that
