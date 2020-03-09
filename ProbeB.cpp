@@ -55,7 +55,7 @@ void sendToHub(int num) {
     }
 
     messageToSnd = to_string(num);
-    strcpy(msg.greeting, "B:" + getpid());
+    strcpy(msg.greeting, "B: ");// + getpid());
     strcat(msg.greeting,  messageToSnd.c_str());    
     
 	msgsnd(qid, (struct msgbuf *)&msg, len, 0); // sending
