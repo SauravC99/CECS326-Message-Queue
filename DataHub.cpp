@@ -138,12 +138,13 @@ void getReading() {
     // checks if its from probe B
     else if (Probe == 1){
         cout << "Is probe B" << endl;
-        id = getpid();
-        cout << id << endl;
+        //id = getpid();
+        //cout << id << endl;
 
         string aaa;
         int bbb;
         if (skip == 0) {
+            countForB = 0;
             char a = msg.greeting[2];
             string aa(1, a);
             char b = msg.greeting[3];
@@ -156,12 +157,14 @@ void getReading() {
             bbb = stoi(aaa);
             skip++;
         }
-        cout << aaa << endl;
-        cout << bbb << endl;
-        id = getpid();
+        //cout << aaa << endl;
+        //cout << bbb << endl;
+        //id = getpid();
 
         countForB++;
-        if (countForB == 10) {
+        //cout << countForB << endl;
+        if (countForB == 10000) {
+            //cout << "terminate B: "<<bbb<<endl;
             terminateProbeB(bbb);
         }
     }
