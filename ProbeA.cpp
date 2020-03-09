@@ -50,6 +50,7 @@ buf msg;
 
 //initializing the size of the message buffer
 int len;
+bool firstMsgSnt = false;
 
 
 /*
@@ -80,10 +81,35 @@ int generateValue() {
 **/
 void sendToHub(int num) {
 
+    if(!firstMsgSnt){
+        len = sizeof(msg)-sizeof(long);
+
+	// prepare my pid of A to send
+    string messageToSnd = to_string(getpid());
+
+    //The message sent needs the A in front of it because mathmatically if
+    //a random value is generated, there is a possibility that
+    //the number will be divisible by the Common demominator of alpha, beta and rho
+    //the max number of the random function is 2147483647 and alpha * beta = 256299
+    //meaning if a number is divisible by both alpha and beta, the datahub wont know
+    //where the message truly came from, therfore we must add which probe the message
+    //derived from
+    strcpy(msg.greeting, "A: ");
+    strcat(msg.greeting,  messageToSnd.c_str());
+    
+    //prepares the mtype (the port to send to)
+	msg.mtype = 1;
+
+    //sends the message and prints the message sent to the datahub
+	msgsnd(qid, (struct msgbuf *)&msg, len, 0);
+    cout << getpid() << ": sends first message: " << msg.greeting << endl;
+    firstMsgSnt = true;
+    }
+
     len = sizeof(msg)-sizeof(long);
 
 	// prepare my message to send
-    string messageToSnd = to_string(getpid());
+    string messageToSnd = to_string(num);
 
     //The message sent needs the A in front of it because mathmatically if
     //a random value is generated, there is a possibility that
