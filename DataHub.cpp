@@ -29,7 +29,7 @@ void getReading();
 void respondTOProbeA();
 bool checkIfProbeAQuit();
 void terminateProbeB(pid_t id);
-void terminateProbeC();
+bool checkIfProbeCQuit();
 void deleteQueue();
 
 //listing of all the magic seed numbers of the probes
@@ -57,7 +57,12 @@ buf msg;
 //exit and delete the message queue
 bool ProbeAActive = true;
 bool ProbeBActive = true;
-bool ProbeCActive = false;
+bool ProbeCActive = true;
+
+//will hold the PID of the Probes when receiving the first mesage
+string ProbeAPID = "";
+string ProbeBPID = "";
+string ProbeCPID = "";
 
 
 /*
@@ -72,13 +77,50 @@ int findProbe() {
     char firstElement = msg.greeting[0];
 
     if (firstElement == 'A'){
+
+        //if the Hub doesnt have the PID of the Probe yet make it remember the Probe ID
+        if(ProbeAPID == ""){
+            char a = msg.greeting[3];
+            string aa(1, a);
+            char b = msg.greeting[4];
+            string bb(1, b);
+            char c = msg.greeting[5];
+            string cc(1, c);
+            char d = msg.greeting[6];
+            string dd(1, d);
+            ProbeAPID = aa + bb + cc + dd;
+        }
         return 0;
     }
+
     else if (firstElement == 'B'){
+        
+        if(ProbeBPID == ""){
+            char a = msg.greeting[2];
+            string aa(1, a);
+            char b = msg.greeting[3];
+            string bb(1, b);
+            char c = msg.greeting[4];
+            string cc(1, c);
+            char d = msg.greeting[5];
+            string dd(1, d);
+            ProbeBPID = aa + bb + cc + dd;
+        }
         return 1;
     }
-    else if (firstElement == 'C')
-    {
+    else if (firstElement == 'C'){
+
+        if(ProbeCPID == ""){
+            char a = msg.greeting[3];
+            string aa(1, a);
+            char b = msg.greeting[4];
+            string bb(1, b);
+            char c = msg.greeting[5];
+            string cc(1, c);
+            char d = msg.greeting[6];
+            string dd(1, d);
+            ProbeCPID = aa + bb + cc + dd;
+        }
         return 2;
     }
     return -1;
@@ -110,17 +152,18 @@ void getReading() {
     //sets the mtype to 1
     msg.mtype = 1;
 
-    //reads the message and displays it
+    //reads the message
     msgrcv(qid, (struct msgbuf *)&msg, len, 1, 0);
-    cout << getpid() << ": gets message" << endl;
-    cout << "message: " << msg.greeting << endl;
 	
     // detects which probe the greeting came from according to the message
     int Probe = findProbe();
 
     //first checks if its from probe A
     if(Probe == 0){
-        cout << "Is probe A" << endl;
+
+        //displays the message
+        cout << getpid() << ": gets message from probe A: PID(" << ProbeAPID;
+        cout << ") message: " << msg.greeting << endl;
 
         //checks if it quit
         if(checkIfProbeAQuit()){
@@ -137,10 +180,15 @@ void getReading() {
 
     // checks if its from probe B
     else if (Probe == 1){
-        cout << "Is probe B" << endl;
+        
+        //displays message
+        cout << getpid() << ": gets message from probe B: PID(" << ProbeBPID;
+        cout << ") message: " << msg.greeting << endl;
+
         //id = getpid();
         //cout << id << endl;
 
+        //will be used for the purposes of the force_patch
         string aaa;
         int bbb;
         if (skip == 0) {
@@ -162,6 +210,7 @@ void getReading() {
         //id = getpid();
 
         countForB++;
+
         //cout << countForB << endl;
         if (countForB == 10000) {
             //cout << "terminate B: "<<bbb<<endl;
@@ -170,9 +219,18 @@ void getReading() {
     }
 
     //checks if its from probe C
-
     else if(Probe == 2){
-        cout << "Is probe C" << endl;
+
+        //displays the message
+        cout << getpid() << ": gets message from probe C: PID(" << ProbeCPID;
+        cout << ") message: " << msg.greeting << endl;
+
+        //checks if it quit
+        if(checkIfProbeCQuit()){
+
+            //if it quit set the probe active variable to false, so that the terminal knows
+            ProbeCActive = false;
+        }
     }
 
 }
@@ -220,14 +278,24 @@ bool checkIfProbeAQuit(){
 void terminateProbeB(pid_t id){
     force_patch(id);
     ProbeBActive = false;
+    cout << "KIlled Probe B" << endl;
 }
 
 
 /*
-* terminates Probe C
+* checks if probe C has sent its quit message
 **/
-void terminateProbeC(){
+bool checkIfProbeCQuit(){
 
+    //creates a temporary message buffer to use and compare to the data
+    buf tempBuffer;
+    strcpy(tempBuffer.greeting, "C_Leaves");
+
+    if(strcmp(msg.greeting,tempBuffer.greeting) == 0){
+        cout << "ProbeC quit" << endl;
+        return true;
+    }
+    return false;
 }
 
 
