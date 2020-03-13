@@ -185,9 +185,6 @@ void getReading() {
         cout << getpid() << ": gets message from probe B: PID(" << ProbeBPID;
         cout << ") message: " << msg.greeting << endl;
 
-        //id = getpid();
-        //cout << id << endl;
-
         //will be used for the purposes of the force_patch
         string aaa;
         int bbb;
@@ -205,15 +202,10 @@ void getReading() {
             bbb = stoi(aaa);
             skip++;
         }
-        //cout << aaa << endl;
-        //cout << bbb << endl;
-        //id = getpid();
 
         countForB++;
 
-        //cout << countForB << endl;
         if (countForB == 10000) {
-            //cout << "terminate B: "<<bbb<<endl;
             terminateProbeB(bbb);
         }
     }
