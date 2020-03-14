@@ -13,6 +13,14 @@
 
 using namespace std;
 
+
+// associated files:
+//DataHub.cpp
+
+//Steven Centeno
+//Saurav Chhapawala
+
+
 //Probe A will do the following:
 
 //I.  It will first generate a random number divisible by its seed number alpha, keep doing so

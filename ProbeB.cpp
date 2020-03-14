@@ -13,6 +13,14 @@
 
 using namespace std;
 
+//Associated Files:
+//DataHub.cpp
+
+//Steven Centeno
+//Saurav Chhapawala
+
+//this probe will send messages until the datahub has recieved 10000 messages
+
 int generateValue();
 void sendToHub(int num);
 

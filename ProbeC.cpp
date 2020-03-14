@@ -14,6 +14,14 @@
 
 using namespace std;
 
+//Associated Files:
+//DataHub.cpp
+//kill_patch.h
+//kill_patch64.o
+
+//Steven Centeno
+//Saurav Chhapawala
+
 //Probe C will: 
 
 //I. Probe C will continuously send messages to the DataHub until 

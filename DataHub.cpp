@@ -12,6 +12,17 @@
 
 using namespace std;
 
+//other files associated:
+//force_patch.h
+//force_patch64.o
+//ProbeA.cpp
+//ProbeB.cpp
+//ProbeC.cpp
+
+//Steven Centeno
+//Saurav Chhapawala
+
+
 //The Datahub will do the following:
 //I.  Get all messages from each probe and read them, until all the probes have exited
 //
